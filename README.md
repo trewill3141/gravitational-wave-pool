@@ -41,6 +41,11 @@ gravitational-wave-pool/
 │   ├── plugins/                # Custom Airflow plugins
 │   ├── config/                 # Airflow configuration files
 │   └── requirements.txt        # Python dependencies
+├── astronomer/                 # Astronomer Airflow configuration
+│   ├── Dockerfile              # Astronomer Docker image
+│   ├── astronomer.yaml         # Astronomer deployment config
+│   ├── docker-compose.yml      # Local Astronomer development
+│   └── requirements.txt        # Astronomer Python dependencies
 ├── snowflake/
 │   ├── schemas/                # Snowflake schema definitions
 │   ├── warehouses/             # Warehouse configurations
@@ -58,7 +63,6 @@ gravitational-wave-pool/
 │   ├── unit/                   # Unit tests
 │   ├── integration/            # Integration tests
 │   └── data_quality/           # Data quality validation
-├── astronomer/                 # Astronomer Airflow configuration
 ├── cicd/                       # CI/CD pipeline configurations
 │   ├── github-actions/         # GitHub Actions workflows
 │   └── jenkins/                # Jenkins pipeline configurations
