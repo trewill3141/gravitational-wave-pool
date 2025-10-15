@@ -16,11 +16,14 @@ This repository serves as a personal sandbox for prototyping and validating data
 - **Docker** - Containerization for consistent environments
 - **Python** - Custom transformations and utilities
 - **SQL** - Data modeling and analytics
+- **Astronomer** - Managed Airflow platform
+- **Permifrost** - Snowflake permissions as code
+- **CI/CD** - GitHub Actions and Jenkins pipelines
 
 ## Repository Structure
 
 ```
-saturn_banana/
+gravitational-wave-pool/
 ├── dbt/
 │   ├── models/                 # DBT models and transformations
 │   ├── macros/                 # Reusable DBT macros
@@ -63,13 +66,15 @@ saturn_banana/
 - Python 3.8+
 - Snowflake account with appropriate permissions
 - Git
+- Astronomer CLI (for Airflow deployment)
+- DBT CLI (for data transformation)
 
 ### Local Development Setup
 
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd saturn_banana
+   cd gravitational-wave-pool
    ```
 
 2. **Set up environment variables**
@@ -94,6 +99,17 @@ saturn_banana/
    dbt run
    ```
 
+6. **Access Airflow UI**
+   - Open http://localhost:8080
+   - Default credentials: admin/admin
+
+7. **Deploy to Astronomer (optional)**
+   ```bash
+   cd astronomer
+   astro auth login
+   astro deploy
+   ```
+
 ## Development Workflow
 
 ### 1. Prototyping New Features
@@ -115,6 +131,12 @@ saturn_banana/
 - Test different warehouse sizes and configurations
 - Experiment with clustering and partitioning strategies
 - Validate query performance and cost optimization
+
+### 5. CI/CD Pipeline Management
+- Use GitHub Actions for automated testing and deployment
+- Configure Jenkins for enterprise CI/CD workflows
+- Manage Snowflake permissions with Permifrost
+- Deploy Airflow DAGs to Astronomer automatically
 
 ## Migration Process
 
@@ -149,8 +171,10 @@ saturn_banana/
 ### Security
 - Never commit credentials or sensitive data
 - Use environment variables for configuration
-- Implement proper access controls
+- Implement proper access controls with Permifrost
 - Follow data governance best practices
+- Use CI/CD secrets management for credentials
+- Regular security audits and permission reviews
 
 ## Monitoring and Observability
 
@@ -164,6 +188,9 @@ saturn_banana/
 - DBT Cloud for transformation monitoring
 - Snowflake's built-in query history and performance metrics
 - Airflow UI for workflow monitoring
+- Astronomer for managed Airflow deployment
+- Permifrost for permission auditing
+- CI/CD pipeline monitoring (GitHub Actions/Jenkins)
 - Custom dashboards for business metrics
 
 ## Contributing
@@ -186,12 +213,16 @@ saturn_banana/
 - [DBT Documentation](https://docs.getdbt.com/)
 - [Snowflake Documentation](https://docs.snowflake.com/)
 - [Apache Airflow Documentation](https://airflow.apache.org/docs/)
+- [Astronomer Documentation](https://docs.astronomer.io/)
+- [Permifrost Documentation](https://github.com/grantorchard/permifrost)
 
 ### Learning Resources
 - DBT Learn courses
 - Snowflake University
 - Airflow tutorials and best practices
+- Astronomer Academy
 - Data engineering blogs and communities
+- CI/CD best practices for data engineering
 
 ## License
 
@@ -203,5 +234,5 @@ For questions about this repository or data engineering practices, please reach 
 
 ---
 
-*Last updated: 20251013*
-*Repository maintained by: Tre*
+*Last updated: 2024-12-19*
+*Repository maintained by: Tre Williams*
