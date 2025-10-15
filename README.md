@@ -49,6 +49,10 @@ saturn_banana/
 │   ├── unit/                   # Unit tests
 │   ├── integration/            # Integration tests
 │   └── data_quality/           # Data quality validation
+├── astronomer/                 # Astronomer Airflow configuration
+├── cicd/                       # CI/CD pipeline configurations
+│   ├── github-actions/         # GitHub Actions workflows
+│   └── jenkins/                # Jenkins pipeline configurations
 └── docker-compose.yml          # Local development environment
 ```
 

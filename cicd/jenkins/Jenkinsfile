@@ -1,0 +1,169 @@
+pipeline {
+    agent any
+    
+    environment {
+        SNOWFLAKE_ACCOUNT = credentials('snowflake-account')
+        SNOWFLAKE_USER = credentials('snowflake-user')
+        SNOWFLAKE_PASSWORD = credentials('snowflake-password')
+        SNOWFLAKE_ROLE = credentials('snowflake-role')
+        SNOWFLAKE_DATABASE = credentials('snowflake-database')
+        SNOWFLAKE_WAREHOUSE = credentials('snowflake-warehouse')
+        SNOWFLAKE_SCHEMA = credentials('snowflake-schema')
+        ASTRONOMER_TOKEN = credentials('astronomer-token')
+        DOCKER_USERNAME = credentials('docker-username')
+        DOCKER_PASSWORD = credentials('docker-password')
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        
+        stage('DBT Test') {
+            when {
+                anyOf {
+                    changeset "dbt/**"
+                    branch 'main'
+                    branch 'develop'
+                }
+            }
+            steps {
+                script {
+                    sh '''
+                        cd dbt
+                        pip install dbt-snowflake dbt-core
+                        dbt deps
+                        dbt debug
+                        dbt compile
+                        dbt test
+                    '''
+                }
+            }
+        }
+        
+        stage('DBT Deploy - Staging') {
+            when {
+                allOf {
+                    branch 'develop'
+                    changeset "dbt/**"
+                }
+            }
+            steps {
+                script {
+                    sh '''
+                        cd dbt
+                        dbt run --models staging
+                    '''
+                }
+            }
+        }
+        
+        stage('DBT Deploy - Production') {
+            when {
+                allOf {
+                    branch 'main'
+                    changeset "dbt/**"
+                }
+            }
+            steps {
+                script {
+                    sh '''
+                        cd dbt
+                        dbt run
+                    '''
+                }
+            }
+        }
+        
+        stage('Airflow Deploy') {
+            when {
+                anyOf {
+                    changeset "airflow/**"
+                    changeset "astronomer/**"
+                    branch 'main'
+                }
+            }
+            steps {
+                script {
+                    sh '''
+                        pip install astro-cli
+                        astro auth login --token $ASTRONOMER_TOKEN
+                        cd astronomer
+                        astro deploy --dags ${BRANCH_NAME}
+                    '''
+                }
+            }
+        }
+        
+        stage('Apply Permissions') {
+            when {
+                allOf {
+                    changeset "snowflake/permifrost/**"
+                    branch 'main'
+                }
+            }
+            steps {
+                script {
+                    sh '''
+                        cd snowflake/permifrost
+                        pip install -r requirements.txt
+                        ./validate_permissions.sh
+                        echo "y" | ./apply_permissions.sh
+                    '''
+                }
+            }
+        }
+        
+        stage('Docker Build') {
+            when {
+                anyOf {
+                    changeset "Dockerfile"
+                    changeset "dbt/Dockerfile"
+                    changeset "astronomer/Dockerfile"
+                    branch 'main'
+                }
+            }
+            steps {
+                script {
+                    sh '''
+                        docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+                        
+                        # Build Airflow image
+                        docker build -t $DOCKER_USERNAME/gravitational-wave-pool-airflow:${BUILD_NUMBER} .
+                        docker push $DOCKER_USERNAME/gravitational-wave-pool-airflow:${BUILD_NUMBER}
+                        
+                        # Build DBT image
+                        docker build -f dbt/Dockerfile -t $DOCKER_USERNAME/gravitational-wave-pool-dbt:${BUILD_NUMBER} .
+                        docker push $DOCKER_USERNAME/gravitational-wave-pool-dbt:${BUILD_NUMBER}
+                        
+                        # Build Astronomer image
+                        docker build -f astronomer/Dockerfile -t $DOCKER_USERNAME/gravitational-wave-pool-astronomer:${BUILD_NUMBER} ./astronomer
+                        docker push $DOCKER_USERNAME/gravitational-wave-pool-astronomer:${BUILD_NUMBER}
+                    '''
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            cleanWs()
+        }
+        success {
+            emailext (
+                subject: "Build Successful: ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
+                body: "Build completed successfully for branch ${env.BRANCH_NAME}",
+                to: "${env.CHANGE_AUTHOR_EMAIL}"
+            )
+        }
+        failure {
+            emailext (
+                subject: "Build Failed: ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
+                body: "Build failed for branch ${env.BRANCH_NAME}. Check the console output for details.",
+                to: "${env.CHANGE_AUTHOR_EMAIL}"
+            )
+        }
+    }
+}
