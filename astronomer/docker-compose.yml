@@ -1,0 +1,71 @@
+# Astronomer Airflow Docker Compose configuration
+# For local development with Astronomer CLI
+
+version: '3.1'
+
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres-db-volume:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 5s
+      retries: 5
+    restart: always
+
+  scheduler:
+    build: .
+    command: scheduler
+    healthcheck:
+      test: ["CMD-SHELL", 'airflow jobs check --job-type SchedulerJob --hostname "$${HOSTNAME}"']
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      &airflow-common-env
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+      AIRFLOW__CORE__FERNET_KEY: ''
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth'
+      _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
+    volumes:
+      - ${AIRFLOW_PROJ_DIR:-.}/airflow/dags:/usr/local/airflow/dags
+      - ${AIRFLOW_PROJ_DIR:-.}/airflow/logs:/usr/local/airflow/logs
+      - ${AIRFLOW_PROJ_DIR:-.}/airflow/plugins:/usr/local/airflow/plugins
+      - ${AIRFLOW_PROJ_DIR:-.}/dbt:/usr/local/airflow/dbt
+
+  webserver:
+    build: .
+    command: webserver
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      <<: *airflow-common-env
+    volumes:
+      - ${AIRFLOW_PROJ_DIR:-.}/airflow/dags:/usr/local/airflow/dags
+      - ${AIRFLOW_PROJ_DIR:-.}/airflow/logs:/usr/local/airflow/logs
+      - ${AIRFLOW_PROJ_DIR:-.}/airflow/plugins:/usr/local/airflow/plugins
+      - ${AIRFLOW_PROJ_DIR:-.}/dbt:/usr/local/airflow/dbt
+
+volumes:
+  postgres-db-volume:

@@ -35,7 +35,8 @@ saturn_banana/
 ├── snowflake/
 │   ├── schemas/                # Snowflake schema definitions
 │   ├── warehouses/             # Warehouse configurations
-│   └── roles/                  # Role and permission definitions
+│   ├── roles/                  # Role and permission definitions
+│   └── permifrost/             # Permissions as code configuration
 ├── scripts/
 │   ├── setup/                  # Environment setup scripts
 │   ├── migration/              # Migration utilities

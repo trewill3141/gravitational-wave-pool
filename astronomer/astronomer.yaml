@@ -1,0 +1,49 @@
+# Astronomer configuration file
+# Defines deployment settings for Astronomer Cloud/Software
+
+project:
+  name: gravitational-wave-pool
+  description: "Data Engineering Director's Personal Prototyping Repository"
+
+deployment:
+  name: gravitational-wave-pool-dev
+  description: "Development deployment for data engineering prototyping"
+  executor: LocalExecutor
+  scheduler_au: 0.1
+  webserver_au: 0.1
+  worker_au: 0.1
+  environment_variables:
+    - key: AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION
+      value: "true"
+    - key: AIRFLOW__CORE__LOAD_EXAMPLES
+      value: "false"
+    - key: AIRFLOW__API__AUTH_BACKENDS
+      value: "airflow.api.auth.backend.basic_auth"
+    - key: AIRFLOW__CORE__EXECUTOR
+      value: "LocalExecutor"
+
+# Environment-specific configurations
+environments:
+  development:
+    name: gravitational-wave-pool-dev
+    description: "Development environment"
+    executor: LocalExecutor
+    scheduler_au: 0.1
+    webserver_au: 0.1
+    worker_au: 0.1
+    
+  staging:
+    name: gravitational-wave-pool-staging
+    description: "Staging environment"
+    executor: LocalExecutor
+    scheduler_au: 0.2
+    webserver_au: 0.2
+    worker_au: 0.2
+    
+  production:
+    name: gravitational-wave-pool-prod
+    description: "Production environment"
+    executor: CeleryExecutor
+    scheduler_au: 0.5
+    webserver_au: 0.5
+    worker_au: 1.0

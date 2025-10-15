@@ -1,0 +1,30 @@
+# Astronomer Airflow requirements
+# Additional packages for data engineering workflows
+
+# Core data engineering packages
+apache-airflow-providers-snowflake==5.0.0
+apache-airflow-providers-postgres==5.5.0
+apache-airflow-providers-docker==3.7.0
+apache-airflow-providers-http==4.5.0
+
+# DBT integration
+dbt-snowflake==1.6.0
+dbt-core==1.6.0
+
+# Data processing
+pandas==2.0.3
+numpy==1.24.3
+sqlalchemy==2.0.19
+psycopg2-binary==2.9.7
+
+# Snowflake
+snowflake-connector-python==3.0.4
+snowflake-sqlalchemy==1.4.0
+
+# Utilities
+python-dotenv==1.0.0
+pyyaml==6.0.1
+requests==2.31.0
+
+# Monitoring and observability
+sentry-sdk==1.32.0
