@@ -30,12 +30,6 @@ This repository serves as a personal sandbox for prototyping and validating data
 
 ```
 gravitational-wave-pool/
-├── dbt/
-│   ├── models/                 # DBT models and transformations
-│   ├── macros/                 # Reusable DBT macros
-│   ├── tests/                  # Data quality tests
-│   ├── seeds/                  # Reference data
-│   └── dbt_project.yml         # DBT project configuration
 ├── airflow/
 │   ├── dags/                   # Airflow DAG definitions
 │   ├── plugins/                # Custom Airflow plugins
@@ -46,59 +40,65 @@ gravitational-wave-pool/
 │   ├── astronomer.yaml         # Astronomer deployment config
 │   ├── docker-compose.yml      # Local Astronomer development
 │   └── requirements.txt        # Astronomer Python dependencies
-├── snowflake/
-│   ├── schemas/                # Snowflake schema definitions
-│   ├── warehouses/             # Warehouse configurations
-│   ├── roles/                  # Role and permission definitions
-│   └── permifrost/             # Permissions as code configuration
-├── scripts/
-│   ├── setup/                  # Environment setup scripts
-│   ├── migration/              # Migration utilities
-│   └── utilities/              # Helper scripts
-├── docs/
-│   ├── architecture/           # System architecture diagrams
-│   ├── patterns/               # Reusable patterns and templates
-│   └── migration/              # Migration guides and notes
-├── tests/
-│   ├── unit/                   # Unit tests
-│   ├── integration/            # Integration tests
-│   └── data_quality/           # Data quality validation
 ├── cicd/                       # CI/CD pipeline configurations
 │   ├── github-actions/         # GitHub Actions workflows
 │   └── jenkins/                # Jenkins pipeline configurations
-├── looker/                     # Looker BI configuration
-│   ├── models/                 # LookML model definitions
-│   ├── explores/               # LookML explore definitions
-│   ├── dashboards/             # Dashboard configurations
-│   └── data_sources/           # Data source connections
-├── grafana/                    # Grafana monitoring dashboards
-│   ├── dashboards/             # Dashboard definitions
-│   ├── datasources/            # Data source configurations
-│   └── alerting/               # Alert rules and notifications
-├── qlik/                       # Qlik Replication configuration
-│   ├── replication_tasks/      # Replication task definitions
-│   ├── source_mappings/        # Source/target mappings
-│   └── monitoring/             # Replication monitoring
-├── monitoring/                 # Comprehensive monitoring setup
-│   ├── prometheus/             # Prometheus configuration
-│   ├── grafana/                # Grafana dashboards
-│   ├── alerts/                 # Alert rules and policies
-│   └── logs/                   # Log aggregation
-├── infrastructure/             # Infrastructure as Code
-│   ├── terraform/              # Terraform configurations
-│   ├── kubernetes/             # Kubernetes manifests
-│   ├── helm/                   # Helm charts
-│   └── ansible/                # Ansible playbooks
 ├── data_quality/               # Data quality management
 │   ├── great_expectations/     # Data validation framework
 │   ├── profiles/               # Data profiling configurations
 │   ├── validations/            # Validation rules and tests
 │   └── reports/                # Quality reports and dashboards
+├── dbt/
+│   ├── models/                 # DBT models and transformations
+│   ├── macros/                 # Reusable DBT macros
+│   ├── tests/                  # Data quality tests
+│   ├── seeds/                  # Reference data
+│   └── dbt_project.yml         # DBT project configuration
+├── docs/
+│   ├── architecture/           # System architecture diagrams
+│   ├── patterns/               # Reusable patterns and templates
+│   └── migration/              # Migration guides and notes
+├── grafana/                    # Grafana monitoring dashboards
+│   ├── dashboards/             # Dashboard definitions
+│   ├── datasources/            # Data source configurations
+│   └── alerting/               # Alert rules and notifications
+├── infrastructure/             # Infrastructure as Code
+│   ├── terraform/              # Terraform configurations
+│   ├── kubernetes/             # Kubernetes manifests
+│   ├── helm/                   # Helm charts
+│   └── ansible/                # Ansible playbooks
+├── looker/                     # Looker BI configuration
+│   ├── models/                 # LookML model definitions
+│   ├── explores/               # LookML explore definitions
+│   ├── dashboards/             # Dashboard configurations
+│   └── data_sources/           # Data source connections
+├── monitoring/                 # Comprehensive monitoring setup
+│   ├── prometheus/             # Prometheus configuration
+│   ├── grafana/                # Grafana dashboards
+│   ├── alerts/                 # Alert rules and policies
+│   └── logs/                   # Log aggregation
+├── qlik/                       # Qlik Replication configuration
+│   ├── replication_tasks/      # Replication task definitions
+│   ├── source_mappings/        # Source/target mappings
+│   └── monitoring/             # Replication monitoring
+├── scripts/
+│   ├── setup/                  # Environment setup scripts
+│   ├── migration/              # Migration utilities
+│   └── utilities/              # Helper scripts
 ├── security/                   # Security and compliance
 │   ├── data_classification/    # Data sensitivity classification
 │   ├── pii_detection/          # PII detection and masking
 │   ├── audit_logs/             # Audit logging configuration
 │   └── compliance/             # Compliance frameworks
+├── snowflake/
+│   ├── schemas/                # Snowflake schema definitions
+│   ├── warehouses/             # Warehouse configurations
+│   ├── roles/                  # Role and permission definitions
+│   └── permifrost/             # Permissions as code configuration
+├── tests/
+│   ├── unit/                   # Unit tests
+│   ├── integration/            # Integration tests
+│   └── data_quality/           # Data quality validation
 └── docker-compose.yml          # Local development environment
 ```
 
