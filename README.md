@@ -100,6 +100,8 @@ gravitational-wave-pool/
 
 ## Getting Started
 
+> **🚀 Quick Start**: For a fast setup, see [QUICKSTART.md](QUICKSTART.md)
+
 ### Prerequisites
 - Docker and Docker Compose
 - Python 3.8+
@@ -254,6 +256,12 @@ gravitational-wave-pool/
 - [Apache Airflow Documentation](https://airflow.apache.org/docs/)
 - [Astronomer Documentation](https://docs.astronomer.io/)
 - [Permifrost Documentation](https://github.com/grantorchard/permifrost)
+
+### Platform Documentation
+- [Quick Start Guide](QUICKSTART.md) - Get up and running in 15 minutes
+- [System Architecture](docs/architecture/system_architecture.md) - Complete system overview
+- [Data Engineering Patterns](docs/patterns/data_engineering_patterns.md) - Best practices and patterns
+- [Production Migration Guide](docs/migration/production_migration_guide.md) - Migrate to production
 
 ### Learning Resources
 - DBT Learn courses
