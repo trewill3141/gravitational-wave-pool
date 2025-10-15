@@ -30,3 +30,11 @@ models:
       +materialized: view
     marts:
       +materialized: table
+      fct_metric_analysis_daily:
+        +materialized: table
+        +sort: ['date desc', 'channel', 'campaign', 'metric']
+      fct_metric_analysis_weekly:
+        +materialized: table
+        +sort: ['date desc', 'channel', 'campaign', 'metric']
+      fct_metric_analysis_filtered:
+        +materialized: view
