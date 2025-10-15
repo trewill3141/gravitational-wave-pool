@@ -1,0 +1,157 @@
+# Permifrost configuration for Snowflake permissions management
+# This file defines roles, users, and permissions as code
+
+# Database configuration
+databases:
+  - name: gravitational_wave_pool
+    comment: "Data engineering prototyping database"
+    schemas:
+      - name: raw
+        comment: "Raw data from source systems"
+        tables:
+          - name: events
+            comment: "Raw event data from marketing systems"
+            columns:
+              - name: event_timestamp
+                comment: "Timestamp of the event"
+              - name: channel_key
+                comment: "Marketing channel identifier"
+              - name: campaign_key
+                comment: "Campaign identifier"
+              - name: metric_name
+                comment: "Name of the metric being tracked"
+              - name: email_send
+                comment: "Number of emails sent"
+              - name: text_send
+                comment: "Number of text messages sent"
+              - name: email_open
+                comment: "Number of email opens"
+              - name: applications_submitted
+                comment: "Number of applications submitted"
+      - name: staging
+        comment: "Cleaned and standardized data"
+        tables:
+          - name: events_cleaned
+            comment: "Cleaned event data ready for analytics"
+      - name: marts
+        comment: "Business-ready dimensional models"
+        tables:
+          - name: dim_users
+            comment: "User dimension table"
+          - name: fct_metric_analysis_daily
+            comment: "Daily metric analysis fact table"
+
+# Warehouse configuration
+warehouses:
+  - name: development_warehouse
+    comment: "Development and testing warehouse"
+    size: X-SMALL
+    auto_suspend: 60
+    auto_resume: true
+  - name: production_warehouse
+    comment: "Production workload warehouse"
+    size: MEDIUM
+    auto_suspend: 300
+    auto_resume: true
+  - name: analytics_warehouse
+    comment: "Analytics and reporting warehouse"
+    size: LARGE
+    auto_suspend: 600
+    auto_resume: true
+
+# Role hierarchy and permissions
+roles:
+  - name: data_engineer
+    comment: "Data engineering team role"
+    warehouses:
+      - development_warehouse
+      - production_warehouse
+      - analytics_warehouse
+    databases:
+      - gravitational_wave_pool
+    schemas:
+      - gravitational_wave_pool.raw
+      - gravitational_wave_pool.staging
+      - gravitational_wave_pool.marts
+    privileges:
+      - USAGE
+      - CREATE TABLE
+      - CREATE VIEW
+      - CREATE SCHEMA
+    tables:
+      - gravitational_wave_pool.raw.*
+      - gravitational_wave_pool.staging.*
+      - gravitational_wave_pool.marts.*
+    table_privileges:
+      - SELECT
+      - INSERT
+      - UPDATE
+      - DELETE
+    future_grants:
+      - gravitational_wave_pool.raw.*: SELECT, INSERT, UPDATE, DELETE
+      - gravitational_wave_pool.staging.*: SELECT, INSERT, UPDATE, DELETE
+      - gravitational_wave_pool.marts.*: SELECT, INSERT, UPDATE, DELETE
+
+  - name: analyst
+    comment: "Business analyst role"
+    warehouses:
+      - analytics_warehouse
+    databases:
+      - gravitational_wave_pool
+    schemas:
+      - gravitational_wave_pool.marts
+    privileges:
+      - USAGE
+    tables:
+      - gravitational_wave_pool.marts.*
+    table_privileges:
+      - SELECT
+    future_grants:
+      - gravitational_wave_pool.marts.*: SELECT
+
+  - name: readonly
+    comment: "Read-only access role"
+    warehouses:
+      - analytics_warehouse
+    databases:
+      - gravitational_wave_pool
+    schemas:
+      - gravitational_wave_pool.marts
+    privileges:
+      - USAGE
+    tables:
+      - gravitational_wave_pool.marts.*
+    table_privileges:
+      - SELECT
+    future_grants:
+      - gravitational_wave_pool.marts.*: SELECT
+
+# User configuration
+users:
+  - name: data_engineer_1
+    comment: "Primary data engineer"
+    roles:
+      - data_engineer
+    default_role: data_engineer
+    default_warehouse: development_warehouse
+  
+  - name: data_engineer_2
+    comment: "Secondary data engineer"
+    roles:
+      - data_engineer
+    default_role: data_engineer
+    default_warehouse: development_warehouse
+  
+  - name: business_analyst_1
+    comment: "Primary business analyst"
+    roles:
+      - analyst
+    default_role: analyst
+    default_warehouse: analytics_warehouse
+  
+  - name: business_analyst_2
+    comment: "Secondary business analyst"
+    roles:
+      - analyst
+    default_role: analyst
+    default_warehouse: analytics_warehouse

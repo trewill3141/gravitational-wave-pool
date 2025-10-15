@@ -9,6 +9,7 @@ snowflake/
 ├── schemas/           # Database schema definitions
 ├── warehouses/        # Warehouse configurations
 ├── roles/            # Role and permission definitions
+├── permifrost/       # Permifrost configuration for permissions as code
 └── README.md         # This file
 ```
 
@@ -107,9 +108,42 @@ snowflake/
 - **Analytics**: Use larger warehouse for complex queries, longer auto-suspend
 - **Monitoring**: Set up alerts for warehouse usage and costs
 
+## Permifrost (Permissions as Code)
+
+### Overview
+Permifrost allows you to manage Snowflake permissions using YAML configuration files, providing:
+
+- **Infrastructure as Code**: Version-controlled permission management
+- **Consistency**: Uniform permissions across environments
+- **Automation**: Apply permissions via CI/CD pipelines
+- **Auditability**: Track all permission changes through git
+
+### Quick Start
+```bash
+cd snowflake/permifrost
+pip install -r requirements.txt
+cp env.example .env
+# Edit .env with your Snowflake credentials
+./validate_permissions.sh  # Preview changes
+./apply_permissions.sh     # Apply permissions
+```
+
+### Key Files
+- **`permifrost.yml`** - Main configuration defining roles, users, and permissions
+- **`apply_permissions.sh`** - Script to apply permissions to Snowflake
+- **`validate_permissions.sh`** - Script to validate current permissions
+- **`requirements.txt`** - Python dependencies
+
+### Benefits
+- **Version Control**: All permission changes tracked in git
+- **Consistency**: Same permissions across dev/staging/prod
+- **Automation**: Deploy permissions with code changes
+- **Documentation**: Permissions defined in readable YAML format
+
 ## Security
 
 - **Role-based Access**: Different roles for different user types
 - **Schema Isolation**: Separate schemas for different data layers
 - **Minimal Permissions**: Grant only necessary permissions
 - **Regular Audits**: Review permissions periodically
+- **Permissions as Code**: Use Permifrost for consistent permission management
