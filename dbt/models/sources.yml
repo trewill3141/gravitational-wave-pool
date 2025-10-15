@@ -1,0 +1,27 @@
+version: 2
+
+sources:
+  - name: raw
+    description: Raw data from source systems
+    tables:
+      - name: example_table
+        description: Example source table
+        columns:
+          - name: id
+            description: Primary key
+            tests:
+              - unique
+              - not_null
+          - name: name
+            description: User name
+            tests:
+              - not_null
+          - name: email
+            description: User email address
+            tests:
+              - not_null
+          - name: status
+            description: User status
+            tests:
+              - accepted_values:
+                  values: ['active', 'inactive']
