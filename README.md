@@ -19,6 +19,12 @@ This repository serves as a personal sandbox for prototyping and validating data
 - **Astronomer** - Managed Airflow platform
 - **Permifrost** - Snowflake permissions as code
 - **CI/CD** - GitHub Actions and Jenkins pipelines
+- **Looker** - Business intelligence and analytics
+- **Grafana** - Monitoring and observability dashboards
+- **Qlik Replicate** - Data replication and synchronization
+- **Prometheus** - Metrics collection and monitoring
+- **Terraform** - Infrastructure as Code
+- **Great Expectations** - Data quality validation
 
 ## Repository Structure
 
@@ -56,6 +62,39 @@ gravitational-wave-pool/
 ├── cicd/                       # CI/CD pipeline configurations
 │   ├── github-actions/         # GitHub Actions workflows
 │   └── jenkins/                # Jenkins pipeline configurations
+├── looker/                     # Looker BI configuration
+│   ├── models/                 # LookML model definitions
+│   ├── explores/               # LookML explore definitions
+│   ├── dashboards/             # Dashboard configurations
+│   └── data_sources/           # Data source connections
+├── grafana/                    # Grafana monitoring dashboards
+│   ├── dashboards/             # Dashboard definitions
+│   ├── datasources/            # Data source configurations
+│   └── alerting/               # Alert rules and notifications
+├── qlik/                       # Qlik Replication configuration
+│   ├── replication_tasks/      # Replication task definitions
+│   ├── source_mappings/        # Source/target mappings
+│   └── monitoring/             # Replication monitoring
+├── monitoring/                 # Comprehensive monitoring setup
+│   ├── prometheus/             # Prometheus configuration
+│   ├── grafana/                # Grafana dashboards
+│   ├── alerts/                 # Alert rules and policies
+│   └── logs/                   # Log aggregation
+├── infrastructure/             # Infrastructure as Code
+│   ├── terraform/              # Terraform configurations
+│   ├── kubernetes/             # Kubernetes manifests
+│   ├── helm/                   # Helm charts
+│   └── ansible/                # Ansible playbooks
+├── data_quality/               # Data quality management
+│   ├── great_expectations/     # Data validation framework
+│   ├── profiles/               # Data profiling configurations
+│   ├── validations/            # Validation rules and tests
+│   └── reports/                # Quality reports and dashboards
+├── security/                   # Security and compliance
+│   ├── data_classification/    # Data sensitivity classification
+│   ├── pii_detection/          # PII detection and masking
+│   ├── audit_logs/             # Audit logging configuration
+│   └── compliance/             # Compliance frameworks
 └── docker-compose.yml          # Local development environment
 ```
 

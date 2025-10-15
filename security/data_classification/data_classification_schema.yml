@@ -1,0 +1,246 @@
+# Data Classification Schema
+# Defines data sensitivity levels and handling requirements
+
+data_classification:
+  levels:
+    - level: 1
+      name: "Public"
+      description: "Data that can be freely shared with anyone"
+      color: "green"
+      handling_requirements:
+        - "No special handling required"
+        - "Can be shared externally"
+        - "No encryption required"
+      examples:
+        - "Public company information"
+        - "Marketing materials"
+        - "Public API documentation"
+
+    - level: 2
+      name: "Internal"
+      description: "Data for internal use only"
+      color: "yellow"
+      handling_requirements:
+        - "Access limited to employees"
+        - "Requires authentication"
+        - "No external sharing"
+      examples:
+        - "Internal reports"
+        - "Employee directory"
+        - "Internal metrics"
+
+    - level: 3
+      name: "Confidential"
+      description: "Sensitive business data"
+      color: "orange"
+      handling_requirements:
+        - "Access limited to authorized personnel"
+        - "Requires encryption in transit and at rest"
+        - "Audit logging required"
+        - "No external sharing without approval"
+      examples:
+        - "Financial data"
+        - "Customer lists"
+        - "Business strategies"
+
+    - level: 4
+      name: "Restricted"
+      description: "Highly sensitive data"
+      color: "red"
+      handling_requirements:
+        - "Access limited to specific roles"
+        - "Strong encryption required"
+        - "Comprehensive audit logging"
+        - "Data loss prevention controls"
+        - "Regular access reviews"
+      examples:
+        - "PII (Personally Identifiable Information)"
+        - "Financial records"
+        - "Legal documents"
+        - "Health information"
+
+  data_types:
+    - type: "PII"
+      classification_level: 4
+      description: "Personally Identifiable Information"
+      fields:
+        - "email_address"
+        - "phone_number"
+        - "social_security_number"
+        - "driver_license_number"
+        - "passport_number"
+        - "date_of_birth"
+        - "home_address"
+      handling_requirements:
+        - "Encryption at rest and in transit"
+        - "Access logging and monitoring"
+        - "Data minimization"
+        - "Right to deletion"
+        - "Consent management"
+
+    - type: "Financial"
+      classification_level: 3
+      description: "Financial and payment information"
+      fields:
+        - "credit_card_number"
+        - "bank_account_number"
+        - "routing_number"
+        - "transaction_amount"
+        - "account_balance"
+        - "payment_method"
+      handling_requirements:
+        - "PCI DSS compliance"
+        - "Encryption required"
+        - "Access controls"
+        - "Audit trails"
+
+    - type: "Health"
+      classification_level: 4
+      description: "Health and medical information"
+      fields:
+        - "medical_record_number"
+        - "diagnosis"
+        - "treatment_history"
+        - "medication_list"
+        - "insurance_information"
+      handling_requirements:
+        - "HIPAA compliance"
+        - "Strong encryption"
+        - "Access controls"
+        - "Audit logging"
+
+    - type: "Business"
+      classification_level: 2
+      description: "Business operations data"
+      fields:
+        - "employee_id"
+        - "department"
+        - "salary_information"
+        - "performance_metrics"
+        - "business_plans"
+      handling_requirements:
+        - "Access controls"
+        - "Internal use only"
+        - "Audit logging"
+
+  tables:
+    - table_name: "raw.events"
+      classification_level: 2
+      description: "Raw marketing event data"
+      sensitive_fields:
+        - field: "email_address"
+          classification: "PII"
+          level: 4
+          masking_rule: "email_mask"
+        - field: "user_id"
+          classification: "Business"
+          level: 2
+          masking_rule: "hash"
+
+    - table_name: "staging.events_cleaned"
+      classification_level: 2
+      description: "Cleaned marketing event data"
+      sensitive_fields:
+        - field: "email_cleaned"
+          classification: "PII"
+          level: 4
+          masking_rule: "email_mask"
+
+    - table_name: "marts.dim_users"
+      classification_level: 3
+      description: "User dimension table"
+      sensitive_fields:
+        - field: "email"
+          classification: "PII"
+          level: 4
+          masking_rule: "email_mask"
+        - field: "user_id"
+          classification: "Business"
+          level: 2
+          masking_rule: "hash"
+
+  masking_rules:
+    - name: "email_mask"
+      description: "Mask email addresses"
+      pattern: "^(.)(.*)(@.*)$"
+      replacement: "$1***$3"
+      example: "john.doe@company.com" -> "j***@company.com"
+
+    - name: "phone_mask"
+      description: "Mask phone numbers"
+      pattern: "^(\d{3})(\d{3})(\d{4})$"
+      replacement: "($1) ***-$3"
+      example: "5551234567" -> "(555) ***-4567"
+
+    - name: "ssn_mask"
+      description: "Mask social security numbers"
+      pattern: "^(\d{3})(\d{2})(\d{4})$"
+      replacement: "***-**-$3"
+      example: "123456789" -> "***-**-6789"
+
+    - name: "hash"
+      description: "Hash sensitive values"
+      algorithm: "SHA-256"
+      salt: "data_engineering_salt"
+
+  access_controls:
+    - role: "data_engineer"
+      permissions:
+        - "read_raw"
+        - "read_staging"
+        - "read_marts"
+        - "write_raw"
+        - "write_staging"
+        - "write_marts"
+      restrictions:
+        - "no_pii_access"
+        - "audit_required"
+
+    - role: "analyst"
+      permissions:
+        - "read_marts"
+      restrictions:
+        - "masked_data_only"
+        - "no_export"
+
+    - role: "readonly"
+      permissions:
+        - "read_marts"
+      restrictions:
+        - "masked_data_only"
+        - "no_export"
+        - "view_only"
+
+  compliance_frameworks:
+    - name: "GDPR"
+      description: "General Data Protection Regulation"
+      requirements:
+        - "Data minimization"
+        - "Right to be forgotten"
+        - "Consent management"
+        - "Data portability"
+        - "Privacy by design"
+
+    - name: "CCPA"
+      description: "California Consumer Privacy Act"
+      requirements:
+        - "Consumer rights"
+        - "Data disclosure"
+        - "Opt-out mechanisms"
+        - "Data protection"
+
+    - name: "HIPAA"
+      description: "Health Insurance Portability and Accountability Act"
+      requirements:
+        - "Administrative safeguards"
+        - "Physical safeguards"
+        - "Technical safeguards"
+        - "Breach notification"
+
+    - name: "PCI DSS"
+      description: "Payment Card Industry Data Security Standard"
+      requirements:
+        - "Secure networks"
+        - "Cardholder data protection"
+        - "Vulnerability management"
+        - "Access controls"

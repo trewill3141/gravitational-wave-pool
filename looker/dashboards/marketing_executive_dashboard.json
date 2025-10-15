@@ -1,0 +1,132 @@
+{
+  "id": "marketing_executive_dashboard",
+  "title": "Marketing Executive Dashboard",
+  "description": "High-level marketing performance metrics for executive review",
+  "space": {
+    "id": "marketing_space",
+    "name": "Marketing Analytics"
+  },
+  "dashboard_elements": [
+    {
+      "id": "total_campaigns",
+      "title": "Active Campaigns",
+      "type": "single_value",
+      "query": {
+        "model": "marketing_metrics",
+        "view": "marketing_campaigns",
+        "fields": ["marketing_campaigns.count"],
+        "filters": {
+          "marketing_campaigns.status": "active"
+        }
+      },
+      "look": {
+        "title": "Active Campaigns",
+        "query": {
+          "model": "marketing_metrics",
+          "view": "marketing_campaigns",
+          "fields": ["marketing_campaigns.count"],
+          "filters": {
+            "marketing_campaigns.status": "active"
+          }
+        }
+      }
+    },
+    {
+      "id": "total_revenue",
+      "title": "Total Revenue",
+      "type": "single_value",
+      "query": {
+        "model": "marketing_metrics",
+        "view": "campaign_performance",
+        "fields": ["campaign_performance.total_revenue"],
+        "pivots": [],
+        "sorts": []
+      }
+    },
+    {
+      "id": "conversion_rate",
+      "title": "Overall Conversion Rate",
+      "type": "single_value",
+      "query": {
+        "model": "marketing_metrics",
+        "view": "campaign_performance",
+        "fields": ["campaign_performance.application_conversion_rate"],
+        "pivots": [],
+        "sorts": []
+      }
+    },
+    {
+      "id": "campaign_performance_chart",
+      "title": "Campaign Performance Over Time",
+      "type": "looker_column",
+      "query": {
+        "model": "marketing_metrics",
+        "view": "campaign_performance",
+        "fields": [
+          "campaign_performance.date",
+          "campaign_performance.total_sends",
+          "campaign_performance.total_opens",
+          "campaign_performance.applications_submitted"
+        ],
+        "pivots": [],
+        "sorts": ["campaign_performance.date"]
+      }
+    },
+    {
+      "id": "channel_breakdown",
+      "title": "Performance by Channel",
+      "type": "looker_pie",
+      "query": {
+        "model": "marketing_metrics",
+        "view": "channel_performance",
+        "fields": [
+          "channel_performance.channel_name",
+          "channel_performance.total_sends"
+        ],
+        "pivots": [],
+        "sorts": []
+      }
+    },
+    {
+      "id": "top_campaigns_table",
+      "title": "Top Performing Campaigns",
+      "type": "looker_grid",
+      "query": {
+        "model": "marketing_metrics",
+        "view": "campaign_performance",
+        "fields": [
+          "campaign_performance.campaign_name",
+          "campaign_performance.total_sends",
+          "campaign_performance.email_open_rate",
+          "campaign_performance.application_conversion_rate",
+          "campaign_performance.performance_score"
+        ],
+        "pivots": [],
+        "sorts": ["campaign_performance.performance_score desc"],
+        "limit": 10
+      }
+    }
+  ],
+  "dashboard_filters": [
+    {
+      "name": "date_range",
+      "title": "Date Range",
+      "type": "date",
+      "default_value": "30 days",
+      "model": "marketing_metrics",
+      "explore": "campaign_performance",
+      "dimension": "date"
+    },
+    {
+      "name": "campaign_filter",
+      "title": "Campaign",
+      "type": "string",
+      "model": "marketing_metrics",
+      "explore": "campaign_performance",
+      "dimension": "campaign_name"
+    }
+  ],
+  "refresh_interval": "5 minutes",
+  "auto_refresh": true,
+  "tags": ["marketing", "executive", "performance"]
+}

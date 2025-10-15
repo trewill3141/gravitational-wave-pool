@@ -1,0 +1,77 @@
+# Prometheus Configuration
+# Data Engineering Director - Monitoring Setup
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'data-engineering'
+    environment: 'prototyping'
+
+rule_files:
+  - "rules/*.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # Airflow metrics
+  - job_name: 'airflow'
+    static_configs:
+      - targets: ['airflow-webserver:8080']
+    metrics_path: '/admin/metrics'
+    scrape_interval: 30s
+
+  # DBT metrics (if using dbt Cloud API)
+  - job_name: 'dbt'
+    static_configs:
+      - targets: ['dbt-cloud-api:443']
+    metrics_path: '/api/v1/metrics'
+    scrape_interval: 60s
+
+  # Snowflake metrics (via custom exporter)
+  - job_name: 'snowflake'
+    static_configs:
+      - targets: ['snowflake-exporter:8080']
+    scrape_interval: 60s
+
+  # Node exporter for system metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+  # Docker metrics
+  - job_name: 'docker'
+    static_configs:
+      - targets: ['docker-exporter:9323']
+
+  # Custom application metrics
+  - job_name: 'data-pipeline'
+    static_configs:
+      - targets: ['data-pipeline:8080']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # Grafana metrics
+  - job_name: 'grafana'
+    static_configs:
+      - targets: ['grafana:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # Looker metrics (if available)
+  - job_name: 'looker'
+    static_configs:
+      - targets: ['looker:9999']
+    metrics_path: '/metrics'
+    scrape_interval: 60s
+
+  # Qlik Replication metrics
+  - job_name: 'qlik-replication'
+    static_configs:
+      - targets: ['qlik-replication:8080']
+    metrics_path: '/metrics'
+    scrape_interval: 60s

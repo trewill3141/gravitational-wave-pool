@@ -1,0 +1,123 @@
+{
+  "replication_task": {
+    "name": "marketing_data_replication",
+    "description": "Replicate marketing data from source systems to Snowflake",
+    "enabled": true,
+    "source_connection": {
+      "type": "postgresql",
+      "host": "source-db.company.com",
+      "port": 5432,
+      "database": "marketing_db",
+      "username": "replication_user",
+      "password": "encrypted_password",
+      "ssl_mode": "require"
+    },
+    "target_connection": {
+      "type": "snowflake",
+      "account": "your-account",
+      "username": "replication_user",
+      "password": "encrypted_password",
+      "warehouse": "replication_warehouse",
+      "database": "gravitational_wave_pool",
+      "schema": "raw"
+    },
+    "tables": [
+      {
+        "source_table": "marketing.events",
+        "target_table": "raw.events",
+        "replication_mode": "full_refresh",
+        "schedule": "0 */6 * * *",
+        "columns": [
+          "event_timestamp",
+          "channel_key",
+          "campaign_key",
+          "metric_name",
+          "email_send",
+          "text_send",
+          "email_open",
+          "applications_submitted",
+          "created_at",
+          "updated_at"
+        ],
+        "filters": {
+          "updated_at": ">= CURRENT_DATE - INTERVAL '1 day'"
+        },
+        "transformations": [
+          {
+            "type": "data_type_conversion",
+            "column": "event_timestamp",
+            "target_type": "TIMESTAMP_NTZ"
+          },
+          {
+            "type": "data_cleaning",
+            "column": "channel_key",
+            "operation": "trim_upper"
+          }
+        ]
+      },
+      {
+        "source_table": "marketing.campaigns",
+        "target_table": "raw.campaigns",
+        "replication_mode": "incremental",
+        "schedule": "0 2 * * *",
+        "incremental_column": "updated_at",
+        "columns": [
+          "campaign_key",
+          "campaign_name",
+          "start_date",
+          "end_date",
+          "budget",
+          "status",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      {
+        "source_table": "marketing.channels",
+        "target_table": "raw.channels",
+        "replication_mode": "full_refresh",
+        "schedule": "0 0 * * 0",
+        "columns": [
+          "channel_key",
+          "channel_name",
+          "channel_type",
+          "is_active",
+          "created_at",
+          "updated_at"
+        ]
+      }
+    ],
+    "monitoring": {
+      "alerts": [
+        {
+          "type": "replication_failure",
+          "enabled": true,
+          "notification_channels": ["email", "slack"]
+        },
+        {
+          "type": "data_lag",
+          "threshold_hours": 2,
+          "enabled": true,
+          "notification_channels": ["email"]
+        },
+        {
+          "type": "row_count_variance",
+          "threshold_percent": 10,
+          "enabled": true,
+          "notification_channels": ["slack"]
+        }
+      ],
+      "metrics": [
+        "rows_replicated",
+        "replication_duration",
+        "error_count",
+        "data_freshness"
+      ]
+    },
+    "retry_policy": {
+      "max_retries": 3,
+      "retry_delay_minutes": 15,
+      "exponential_backoff": true
+    }
+  }
+}

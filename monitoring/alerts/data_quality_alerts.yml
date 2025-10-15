@@ -1,0 +1,119 @@
+# Data Quality Alert Rules
+# Prometheus alerting rules for data engineering monitoring
+
+groups:
+  - name: data_quality
+    rules:
+      - alert: DBTTestFailure
+        expr: dbt_test_failures_total > 0
+        for: 5m
+        labels:
+          severity: warning
+          component: dbt
+        annotations:
+          summary: "DBT test failure detected"
+          description: "{{ $labels.test_name }} has failed for {{ $labels.model_name }}"
+
+      - alert: DBTModelRunFailure
+        expr: dbt_model_runs_failed_total > 0
+        for: 2m
+        labels:
+          severity: critical
+          component: dbt
+        annotations:
+          summary: "DBT model run failed"
+          description: "Model {{ $labels.model_name }} failed to run"
+
+      - alert: AirflowDAGFailure
+        expr: airflow_dag_run_failed_total > 0
+        for: 5m
+        labels:
+          severity: critical
+          component: airflow
+        annotations:
+          summary: "Airflow DAG failure"
+          description: "DAG {{ $labels.dag_id }} has failed"
+
+      - alert: SnowflakeQuerySlow
+        expr: snowflake_query_duration_seconds > 300
+        for: 2m
+        labels:
+          severity: warning
+          component: snowflake
+        annotations:
+          summary: "Slow Snowflake query detected"
+          description: "Query {{ $labels.query_id }} took {{ $value }}s"
+
+      - alert: DataFreshnessStale
+        expr: data_freshness_hours > 6
+        for: 10m
+        labels:
+          severity: warning
+          component: data_pipeline
+        annotations:
+          summary: "Data freshness issue"
+          description: "Data is {{ $value }} hours old for {{ $labels.table_name }}"
+
+      - alert: ReplicationLag
+        expr: qlik_replication_lag_hours > 2
+        for: 5m
+        labels:
+          severity: warning
+          component: qlik
+        annotations:
+          summary: "Replication lag detected"
+          description: "Replication is {{ $value }} hours behind for {{ $labels.task_name }}"
+
+  - name: system_health
+    rules:
+      - alert: HighMemoryUsage
+        expr: (container_memory_usage_bytes / container_spec_memory_limit_bytes) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High memory usage"
+          description: "Container {{ $labels.name }} is using {{ $value | humanizePercentage }} memory"
+
+      - alert: HighCPUUsage
+        expr: rate(container_cpu_usage_seconds_total[5m]) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High CPU usage"
+          description: "Container {{ $labels.name }} is using {{ $value | humanizePercentage }} CPU"
+
+      - alert: DiskSpaceLow
+        expr: (node_filesystem_avail_bytes / node_filesystem_size_bytes) < 0.1
+        for: 5m
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "Low disk space"
+          description: "Disk space is low on {{ $labels.instance }}"
+
+  - name: business_metrics
+    rules:
+      - alert: ConversionRateDrop
+        expr: (application_conversion_rate - application_conversion_rate offset 1d) < -0.05
+        for: 10m
+        labels:
+          severity: warning
+          component: business
+        annotations:
+          summary: "Conversion rate dropped"
+          description: "Conversion rate dropped by {{ $value | humanizePercentage }} for campaign {{ $labels.campaign }}"
+
+      - alert: EmailOpenRateLow
+        expr: email_open_rate < 0.1
+        for: 15m
+        labels:
+          severity: warning
+          component: business
+        annotations:
+          summary: "Low email open rate"
+          description: "Email open rate is {{ $value | humanizePercentage }} for campaign {{ $labels.campaign }}"

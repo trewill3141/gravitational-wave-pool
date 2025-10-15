@@ -1,0 +1,187 @@
+# Great Expectations Configuration
+# Data Quality Expectations for Marketing Data
+
+data_asset_name: marketing_events
+expectation_suite_name: marketing_events_suite
+
+expectations:
+  - expectation_type: expect_table_row_count_to_be_between
+    kwargs:
+      min_value: 1000
+      max_value: 1000000
+    meta:
+      description: "Table should have reasonable row count"
+
+  - expectation_type: expect_column_to_exist
+    kwargs:
+      column: event_timestamp
+    meta:
+      description: "Event timestamp column must exist"
+
+  - expectation_type: expect_column_to_exist
+    kwargs:
+      column: campaign_key
+    meta:
+      description: "Campaign key column must exist"
+
+  - expectation_type: expect_column_values_to_not_be_null
+    kwargs:
+      column: event_timestamp
+    meta:
+      description: "Event timestamp cannot be null"
+
+  - expectation_type: expect_column_values_to_not_be_null
+    kwargs:
+      column: campaign_key
+    meta:
+      description: "Campaign key cannot be null"
+
+  - expectation_type: expect_column_values_to_be_in_set
+    kwargs:
+      column: channel_key
+      value_set: ["email", "text", "push", "social", "display"]
+    meta:
+      description: "Channel key must be valid value"
+
+  - expectation_type: expect_column_values_to_be_of_type
+    kwargs:
+      column: event_timestamp
+      type_: "TIMESTAMP_NTZ"
+    meta:
+      description: "Event timestamp must be timestamp type"
+
+  - expectation_type: expect_column_values_to_be_of_type
+    kwargs:
+      column: email_send
+      type_: "INTEGER"
+    meta:
+      description: "Email send count must be integer"
+
+  - expectation_type: expect_column_values_to_be_between
+    kwargs:
+      column: email_send
+      min_value: 0
+      max_value: 1000000
+    meta:
+      description: "Email send count must be reasonable"
+
+  - expectation_type: expect_column_values_to_be_between
+    kwargs:
+      column: text_send
+      min_value: 0
+      max_value: 1000000
+    meta:
+      description: "Text send count must be reasonable"
+
+  - expectation_type: expect_column_values_to_be_between
+    kwargs:
+      column: email_open
+      min_value: 0
+      max_value: 1000000
+    meta:
+      description: "Email open count must be reasonable"
+
+  - expectation_type: expect_column_values_to_be_between
+    kwargs:
+      column: applications_submitted
+      min_value: 0
+      max_value: 1000000
+    meta:
+      description: "Applications submitted count must be reasonable"
+
+  - expectation_type: expect_column_values_to_match_regex
+    kwargs:
+      column: campaign_key
+      regex: "^[A-Za-z0-9_-]+$"
+    meta:
+      description: "Campaign key must match expected format"
+
+  - expectation_type: expect_column_values_to_match_regex
+    kwargs:
+      column: channel_key
+      regex: "^[a-z]+$"
+    meta:
+      description: "Channel key must be lowercase"
+
+  - expectation_type: expect_column_values_to_be_unique
+    kwargs:
+      column: event_timestamp
+    meta:
+      description: "Event timestamps should be unique"
+      mostly: 0.95
+
+  - expectation_type: expect_column_values_to_be_increasing
+    kwargs:
+      column: created_at
+    meta:
+      description: "Created at should be increasing"
+      mostly: 0.9
+
+  - expectation_type: expect_column_values_to_be_decreasing
+    kwargs:
+      column: updated_at
+    meta:
+      description: "Updated at should be decreasing (most recent first)"
+      mostly: 0.8
+
+  - expectation_type: expect_column_mean_to_be_between
+    kwargs:
+      column: email_send
+      min_value: 10
+      max_value: 1000
+    meta:
+      description: "Average email sends should be reasonable"
+
+  - expectation_type: expect_column_median_to_be_between
+    kwargs:
+      column: email_open
+      min_value: 5
+      max_value: 500
+    meta:
+      description: "Median email opens should be reasonable"
+
+  - expectation_type: expect_column_std_to_be_between
+    kwargs:
+      column: applications_submitted
+      min_value: 0
+      max_value: 100
+    meta:
+      description: "Standard deviation of applications should be reasonable"
+
+  - expectation_type: expect_column_values_to_be_in_set
+    kwargs:
+      column: metric_name
+      value_set: ["email_send", "text_send", "email_open", "applications_submitted", "click_through", "conversion"]
+    meta:
+      description: "Metric name must be valid"
+
+  - expectation_type: expect_column_values_to_be_unique
+    kwargs:
+      column: campaign_key
+    meta:
+      description: "Campaign keys should be unique"
+      mostly: 0.99
+
+  - expectation_type: expect_column_values_to_be_between
+    kwargs:
+      column: event_timestamp
+      min_value: "2024-01-01"
+      max_value: "2025-12-31"
+    meta:
+      description: "Event timestamp must be within reasonable date range"
+
+  - expectation_type: expect_column_values_to_be_between
+    kwargs:
+      column: created_at
+      min_value: "2024-01-01"
+      max_value: "2025-12-31"
+    meta:
+      description: "Created at must be within reasonable date range"
+
+  - expectation_type: expect_column_values_to_be_between
+    kwargs:
+      column: updated_at
+      min_value: "2024-01-01"
+      max_value: "2025-12-31"
+    meta:
+      description: "Updated at must be within reasonable date range"

@@ -1,0 +1,26 @@
+# Grafana Data Source: Snowflake
+# Configuration for Snowflake data source in Grafana
+
+apiVersion: 1
+
+datasources:
+  - name: Snowflake
+    type: grafana-snowflake-datasource
+    access: proxy
+    url: https://your-account.snowflakecomputing.com
+    database: gravitational_wave_pool
+    schema: marts
+    warehouse: analytics_warehouse
+    role: analyst
+    jsonData:
+      account: your-account
+      username: your-username
+      warehouse: analytics_warehouse
+      database: gravitational_wave_pool
+      schema: marts
+      role: analyst
+    secureJsonData:
+      password: your-password
+    isDefault: true
+    editable: true
+    version: 1
