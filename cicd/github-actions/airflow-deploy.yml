@@ -1,0 +1,42 @@
+name: Airflow Deploy to Astronomer
+
+on:
+  push:
+    branches: [main]
+    paths: ['airflow/**', 'astronomer/**']
+  workflow_dispatch:
+
+jobs:
+  deploy-astronomer:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Install Astronomer CLI
+      run: |
+        pip install astro-cli
+        
+    - name: Configure Astronomer
+      run: |
+        astro auth login --token ${{ secrets.ASTRONOMER_TOKEN }}
+        
+    - name: Deploy to Astronomer
+      run: |
+        cd astronomer
+        astro deploy --dags ${{ github.ref_name }}
+      env:
+        ASTRONOMER_TOKEN: ${{ secrets.ASTRONOMER_TOKEN }}
+        ASTRONOMER_ORGANIZATION: ${{ secrets.ASTRONOMER_ORGANIZATION }}
+        ASTRONOMER_WORKSPACE: ${{ secrets.ASTRONOMER_WORKSPACE }}
+        
+    - name: Notify deployment
+      if: always()
+      run: |
+        echo "Deployment completed for branch: ${{ github.ref_name }}"
